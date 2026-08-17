@@ -11,30 +11,43 @@
         p {font-size:18px; margin-bottom:40px; color:#eee;}  
         .boton {background:#25d366; color:white; font-size:22px; font-weight:bold; padding:20px 40px; border-radius:50px; text-decoration:none; display:inline-block; box-shadow:0 4px 15px rgba(37,211,102,0.4);}  
         .aviso {margin-top:30px; font-size:15px; color:#aaa;}  
-        .contador {margin-top:40px; font-size:14px; color:#888; background:rgba(255,255,255,0.05); padding:10px 20px; border-radius:8px;}  
+        .contador {margin-top:40px; font-size:15px; color:#ddd; background:rgba(212,175,55,0.15); padding:15px 25px; border-radius:10px; border:1px solid #d4af37;}  
+        .fecha {font-size:12px; color:#888; margin-top:5px;}  
     </style>  
 </head>  
 <body>  
     <h1>✨ UNICORNIO NEGRO ✨</h1>  
     <p>Toca el botón y se abrirá WhatsApp</p>  
     <a href="https://wa.me/525559647219?text=Quiero una consulta gratis ✨" class="boton">👉 ESCRIBIRME POR WHATSAPP 👈</a>  
-    <p class="aviso">Se abre automáticamente en 3 segundos...</p>
+    <p class="aviso">Se abre automáticamente en 2 segundos...</p>  
 
     <div class="contador">
-        👀 Personas que han entrado: <span id="visitas">0</span>
+        📊 Personas hoy: <span id="visitas">0</span>
+        <div class="fecha" id="fechaHoy"></div>
     </div>
 
     <script>  
-        // CONTADOR DE VISITAS
-        let visitas = localStorage.getItem('totalVisitas') || 0;
-        visitas = parseInt(visitas) + 1;
-        localStorage.setItem('totalVisitas', visitas);
-        document.getElementById('visitas').textContent = visitas;
+        // 📅 CONTADOR DIARIO — SE REINICIA SOLO CADA DÍA
+        const hoy = new Date().toLocaleDateString('es-ES');
+        const fechaGuardada = localStorage.getItem('fechaContador');
+        let visitas = 0;
 
-        // REDIRECCIÓN A WHATSAPP
+        if (fechaGuardada !== hoy) {
+            visitas = 1;
+            localStorage.setItem('fechaContador', hoy);
+            localStorage.setItem('visitasHoy', visitas);
+        } else {
+            visitas = parseInt(localStorage.getItem('visitasHoy') || 0) + 1;
+            localStorage.setItem('visitasHoy', visitas);
+        }
+
+        document.getElementById('visitas').textContent = visitas;
+        document.getElementById('fechaHoy').textContent = 'Fecha: ' + hoy;
+
+        // ⏱️ REDIRECCIÓN EN 2 SEGUNDOS
         setTimeout(function(){
-            window.location.href="https://wa.me/525559647219?text=Quiero una consulta gratis ✨";
-        },3000);  
+            window.location.href = "https://wa.me/525559647219?text=Quiero una consulta gratis ✨";
+        }, 2000);  
     </script>  
 </body>  
 </html>
