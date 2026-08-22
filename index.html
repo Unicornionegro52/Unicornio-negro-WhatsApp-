@@ -7,77 +7,47 @@
     <style>  
         * {margin:0; padding:0; box-sizing:border-box; font-family:sans-serif;}  
         body {background:linear-gradient(135deg,#1a1a2e,#16213e); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white; padding:20px; text-align:center;}  
-        h1 {font-size:clamp(28px,8vw,42px); margin-bottom:20px; color:#d4af37; font-weight:bold; letter-spacing:1px;}  
+        h1 {font-size:32px; margin-bottom:20px; color:#d4af37;}  
         p {font-size:18px; margin-bottom:40px; color:#eee;}  
-        .boton {background:#25d366; color:white; font-size:22px; font-weight:bold; padding:20px 40px; border-radius:50px; text-decoration:none; display:inline-block; box-shadow:0 4px 15px rgba(37,211,102,0.4); border:none; cursor:pointer; transition:transform 0.2s;}  
-        .boton:active {transform:scale(0.98);}
+        .boton {background:#25d366; color:white; font-size:22px; font-weight:bold; padding:20px 40px; border-radius:50px; text-decoration:none; display:inline-block; box-shadow:0 4px 15px rgba(37,211,102,0.4);}  
         .aviso {margin-top:30px; font-size:15px; color:#aaa;}  
-        .contador {margin-top:50px; font-size:18px; color:#ddd; background:rgba(212,175,55,0.15); padding:25px 35px; border-radius:12px; border:2px solid #d4af37; min-width:320px; max-width:400px;}  
-        .contador h3 {color:#d4af37; margin-bottom:15px; font-size:22px; display:flex; align-items:center; justify-content:center; gap:8px;}  
-        .numero {font-size:48px; font-weight:bold; color:#fff; margin:15px 0;}  
-        .fecha {font-size:14px; color:#aaa; margin-top:10px; border-top:1px solid rgba(212,175,55,0.3); padding-top:10px;}  
-        .cargando {color:#ffd700; font-style:italic;}
-        .error {color:#ff6b6b;}
-        .info {font-size:12px; color:#888; margin-top:10px;}
+        .contador {margin-top:40px; font-size:15px; color:#ddd; background:rgba(212,175,55,0.15); padding:15px 25px; border-radius:10px; border:1px solid #d4af37;}  
+        .fecha {font-size:12px; color:#888; margin-top:5px;}  
     </style>  
 </head>  
 <body>  
     <h1>✨ UNICORNIO NEGRO ✨</h1>  
     <p>Toca el botón y se abrirá WhatsApp</p>  
     <a href="https://wa.me/525547814477?text=Quiero una consulta gratis ✨" class="boton">👉 ESCRIBIRME POR WHATSAPP 👈</a>  
-    <p class="aviso">Se abre automáticamente en 5 segundos...</p>  
+    <p class="aviso">Se abre automáticamente en 2 segundos...</p>  
 
     <div class="contador">
-        <h3>📊 VISITAS TOTALES</h3>
-        <div class="numero" id="totalVisitas"><span class="cargando">Cargando...</span></div>
+        📊 Personas hoy: <span id="visitas">0</span>
         <div class="fecha" id="fechaHoy"></div>
-        <div class="info" id="infoEstado"></div>
     </div>
 
-    <script>
-        // 🔢 CONTADOR GLOBAL — con respaldo si falla el servicio principal
-        const CLAVE = 'unicornio_negro_visitas';
-        const URL_API = `https://api.countapi.xyz/hit/${CLAVE}/visitas`;
+    <script>  
+        // 📅 CONTADOR DIARIO — SE REINICIA SOLO CADA DÍA
+        const hoy = new Date().toLocaleDateString('es-ES');
+        const fechaGuardada = localStorage.getItem('fechaContador');
+        let visitas = 0;
 
-        async function actualizarContador() {
-            try {
-                const respuesta = await fetch(URL_API, {
-                    method: 'GET',
-                    cache: 'no-store',
-                    mode: 'cors'
-                });
-
-                if (!respuesta.ok) throw new Error('Servicio no disponible');
-                
-                const datos = await respuesta.json();
-                document.getElementById('totalVisitas').textContent = datos.value;
-                document.getElementById('infoEstado').innerHTML = '✅ Contador activo';
-                
-            } catch (error) {
-                console.warn('Error con CountAPI, usando respaldo:', error);
-                // 🛡️ PLAN B: contador local con advertencia
-                const respaldo = localStorage.getItem('contadorRespaldo') || '0';
-                const nuevoValor = parseInt(respaldo) + 1;
-                localStorage.setItem('contadorRespaldo', nuevoValor);
-                document.getElementById('totalVisitas').textContent = `${nuevoValor} (local)`;
-                document.getElementById('totalVisitas').classList.add('error');
-                document.getElementById('infoEstado').innerHTML = '⚠️ Modo respaldo (sin internet)';
-            }
-
-            // 📅 Fecha
-            const fecha = new Date().toLocaleDateString('es-ES', {
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
-            });
-            document.getElementById('fechaHoy').textContent = '📅 ' + fecha;
+        if (fechaGuardada !== hoy) {
+            visitas = 1;
+            localStorage.setItem('fechaContador', hoy);
+            localStorage.setItem('visitasHoy', visitas);
+        } else {
+            visitas = parseInt(localStorage.getItem('visitasHoy') || 0) + 1;
+            localStorage.setItem('visitasHoy', visitas);
         }
 
-        // Iniciar
-        actualizarContador();
+        document.getElementById('visitas').textContent = visitas;
+        document.getElementById('fechaHoy').textContent = 'Fecha: ' + hoy;
 
-        // ⏱️ REDIRECCIÓN EN 5 SEGUNDOS
+        // ⏱️ REDIRECCIÓN EN 2 SEGUNDOS
         setTimeout(function(){
             window.location.href = "https://wa.me/525547814477?text=Quiero una consulta gratis ✨";
-        }, 5000);
+        }, 2000);  
     </script>  
 </body>  
 </html>
